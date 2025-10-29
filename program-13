@@ -1,0 +1,18 @@
+import nltk
+from nltk import CFG
+grammar=CFG.fromstring("""
+S -> NP VP
+NP -> Det N
+VP -> V NP
+Det -> 'the' | 'a'
+N -> 'cat' | 'dog'
+V -> 'chased' | 'saw'
+""")
+sent="the cat chased the dog".split()
+parser=nltk.ChartParser(grammar)
+for tree in parser.parse(sent):
+    print(tree)
+
+
+output:
+(S (NP (Det the) (N cat)) (VP (V chased) (NP (Det the) (N dog))))
