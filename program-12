@@ -1,0 +1,43 @@
+def earley_parse(tokens, grammar, start):
+    rules=[]
+    for L,prods in grammar.items():
+        for prod in prods:
+            rules.append((L,tuple(prod)))
+    chart=[set() for _ in range(len(tokens)+1)]
+    def add(i,item):
+        if item not in chart[i]:
+            chart[i].add(item)
+            return True
+        return False
+    start_item=(start,(),tuple(grammar[start]),0)
+    add(0,start_item)
+    for i in range(len(chart)):
+        changed=True
+        while changed:
+            changed=False
+            for item in list(chart[i]):
+                A,seen,rest,dot=item
+                if dot<len(rest):
+                    B=rest[dot]
+                    if B in grammar:
+                        for prod in grammar[B]:
+                            if add(i,(B,(),tuple(prod),0)):
+                                changed=True
+                    else:
+                        if i<len(tokens) and tokens[i]==B:
+                            if add(i+1,(B,(B,),(),1)):
+                                changed=True
+                else:
+                    for it in list(chart[0 if A==start else i]):
+                        if it[0]==start or (it[3]<len(it[2]) and it[2][it[3]]==A):
+                            new=(it[0], it[1]+(A,), it[2], it[3]+1)
+                            if add(i,new):
+                                changed=True
+    return any(item[0]==start and item[3]==len(item[2]) for item in chart[len(tokens)])
+grammar={'S':[('NP','VP')],'NP':[('Det','N')],'VP':[('V','NP')],'Det':[('the',),('a',)],'N':[('cat',),('dog',)],'V':[('chased',),('saw',)]}
+print(earley_parse("the cat chased the dog".split(), grammar, 'S'))
+
+
+
+output:
+False
