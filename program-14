@@ -1,0 +1,35 @@
+import nltk
+from nltk import word_tokenize,pos_tag
+nltk.download('punkt',quiet=True)
+nltk.download('averaged_perceptron_tagger',quiet=True)
+def check_agreement(sent):
+    tokens=word_tokenize(sent)
+    tags=pos_tag(tokens)
+    subj=None
+    for i,(w,t) in enumerate(tags):
+        if t in ('NN','NNS','NNP','PRP'):
+            subj=(w,t); break
+    verb=None
+    for i,(w,t) in enumerate(tags):
+        if t.startswith('VB'):
+            verb=(w,t); break
+    if not subj or not verb:
+        return True
+    subj_plural=subj[1] in ('NNS','PRP') and subj[0].lower()!='i'
+    verb_third_person=verb[1]=='VBZ'
+    if subj_plural and verb_third_person:
+        return False
+    if (not subj_plural) and verb_third_person==False and verb[1] in ('VBZ',):
+        return True
+    if (not subj_plural) and verb_third_person:
+        return True
+    if subj_plural and not verb_third_person:
+        return True
+    return True
+print(check_agreement("She eats apples"))
+print(check_agreement("They eats apples"))
+
+
+output:
+False
+True
