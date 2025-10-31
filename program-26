@@ -1,0 +1,7 @@
+from transformers import pipeline 
+translator = pipeline("translation_en_to_fr", model="Helsinki-NLP/opus-mt-en-fr") text = "Natural Language Processing is a fascinating field of Artificial Intelligence." result = translator(text) 
+print(result[0]['translation_text']) 
+
+
+output:
+Le traitement du langage naturel est un domaine fascinant de l'intelligence artificielle. 
